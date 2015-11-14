@@ -1,0 +1,250 @@
+{% extends 'base.html' %}
+
+{% block bootstrap3_extra_head %}
+    <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/3.15/themes/css/cartodb.css" />
+
+    <script src="http://libs.cartocdn.com/cartodb.js/v3/3.15/cartodb.js"></script>
+    
+    <script>
+
+
+
+    // $(function() {
+    //     var mapvis;
+    //     var layerUrl = 'http://documentation.cartodb.com/api/v2/viz/836e37ca-085a-11e4-8834-0edbca4b5057/viz.json';
+
+    //     var LayerOptions = {
+    //         sql: "SELECT * FROM example_cartodbjs_1 where adm0_a3 = 'USA'"
+    //     }
+
+    //     var map = cartodb.createVis('map', 'https://dyerrington.cartodb.com/api/v2/viz/37406786-82b3-11e5-8347-0ea31932ec1d/viz.json').done(function(vis, layers) {
+    //         mapvis = vis
+    //         console.log('This is the vis var:', vis, 'and this is the layers var:', layers)
+    //     })
+        
+    //     cartodb.createLayer(map, layerUrl, LayerOptions)
+    //     .addTo(map)
+    //     .on('done', function(layer) {
+    //         // get sublayer 0 and set the infowindow template
+    //         var sublayer = layer.getSubLayer(0);
+    //         console.log('WE got us the stufffs here.... ho ho ho')
+
+    //         sublayer.infowindow.set('template', $('#infowindow_template').html());
+    //     }).on('error', function(error) {
+    //         console.log("some error occurred", error);
+    //     });
+
+    //     $('#location').change(function() {
+    //         console.log($('option:selected', this).data('lat'));
+    //         var options = {
+    //             'lat':  parseInt($('option:selected', this).data('lat')),
+    //             'lon':  parseInt($('option:selected', this).data('lon')),
+    //         }
+
+    //         console.log('Updating map location to location', $(this).val());
+    //         map = mapvis.getNativeMap();
+    //         // map.setView(new L.LatLng(options['lat'], options['lon']), 7);
+    //         // map.center([-3.4, 44.2])
+    //         // 
+    //         // Query our CartoDB table to find the center of a state from your Counties
+    //         // Zoom the leaflet map to that center
+    //         var account_name = 'dyerrington';
+    //         var sql = cartodb.SQL({ user: account_name });
+
+    //         var c = '28';
+
+    //         // this sql will get the centroid of a state based on the statefp code... here hard coded to 28
+    //         // 
+    //         // 
+    //         sql.execute("SELECT " +
+    //             "st_x(st_centroid(st_collect(the_geom))) lon, " +
+    //             "st_y(st_centroid(st_collect(the_geom))) lat " +
+    //             "FROM cb_2013_us_county_500k " +
+    //             "WHERE statefp ilike  '28' GROUP BY statefp").done(function(data) {
+                
+    //             // Check if there are results
+    //             if(data.rows.length > 0) {
+    //                 map.setView([data.rows[0].lat, data.rows[0].lon], 9, { animate: true});
+    //             }
+    //         });
+    //     });
+
+
+    // })
+
+    var map;
+    var globalLayer;
+    var viz;
+
+    function init(){
+      // initiate leaflet map
+      // map = new L.Map('map', { 
+      //   center: [40,-98],
+      //   zoom: 4
+      // })
+
+      function openInfowindow(layer, latlng, cartodb_id) {
+        layer.trigger('featureClick', null, latlng, null, { cartodb_id: cartodb_id }, 0);
+      }
+
+      var layerUrl = 'http://documentation.cartodb.com/api/v2/viz/236085de-ea08-11e2-958c-5404a6a683d5/viz.json';
+
+      var layerUrl = 'https://dyerrington.cartodb.com/api/v2/viz/37406786-82b3-11e5-8347-0ea31932ec1d/viz.json';
+
+      viz  = cartodb.createVis('map', layerUrl, {
+        center: [40,-98],
+        zoom: 4        
+      }).done(function(vis, layers) {
+
+        // vis.addOverlay({
+        //     type: 'infowindow',
+        //     template: $('#infobox_template').html()
+        // })
+
+        var map = vis.getNativeMap();
+
+        var stateOptions = {
+            sql: "SELECT * FROM ne_50m_admin_1_states",
+            // cartocss: "#example_cartodbjs_1{marker-fill: #109DCD; marker-width: 5; marker-line-color: white; marker-line-width: 0;}"
+        }
+      
+        // change the query for the first layer
+        var countyOptions = {
+            sql: "SELECT * FROM cb_2013_us_county_500k",
+            // cartocss: "#example_cartodbjs_1{marker-fill: #109DCD; marker-width: 5; marker-line-color: white; marker-line-width: 0;}"
+        }
+
+        var county  =   layers[1].getSubLayer(0).set(countyOptions);
+        var state   =   layers[1].getSubLayer(1).set(stateOptions); 
+
+        county.set('template', $('#infowindow_template').html());
+
+            county.hide();
+
+            // console.log('Whats our other layer doing?', layer.getSubLayer(1))
+
+            state.on('featureClick', function(e, latlng, pos, data) {
+                // alert("Hey! You clicked " + data.cartodb_id);
+                console.log('Our data for state is:', data['code_local'].substring(2));
+
+                var statecode = data['code_local'].substring(2);
+                county.show();
+                state.hide();
+
+                var account_name = 'dyerrington';
+                var sql = cartodb.SQL({ user: account_name });
+
+                sql.execute("SELECT " +
+                    "st_x(st_centroid(st_collect(the_geom))) lon, " +
+                    "st_y(st_centroid(st_collect(the_geom))) lat " +
+                    "FROM cb_2013_us_county_500k " +
+                    "WHERE statefp ilike '" + statecode + "' GROUP BY statefp").done(function(data) {
+                    
+                    // Check if there are results
+                    if(data.rows.length > 0) {
+                        map.setView([data.rows[0].lat, data.rows[0].lon], 6, { animate: true});
+                        console.log("SELECT * FROM cb_2013_us_county_500k WHERE statefp = '" + statecode + "'");
+                        county.set({'sql': "SELECT * FROM cb_2013_us_county_500k WHERE statefp = '" + statecode + "'"});
+                    }
+                });
+
+            });
+
+            county.on('featureClick', function(e, latlng, pos, data) {
+                
+                console.log('featureClick() ........')
+                // alert("Hey! You clicked " + data.cartodb_id);
+      // $('.link').click(function() {
+      //   openInfowindow(county, [40.4000262645, -3.683351686], 5324)
+      //   return false;
+      // });
+                // openInfowindow(, [40.4000262645, -3.683351686], 5324)
+                // county.hide();
+                // state.show();
+                // map.setView([40, -98], 4, { animate: true});
+            });
+
+      });
+
+      // L.tileLayer('https://dnv9my2eseobd.cloudfront.net/v3/cartodb.map-4xtxp73f/{z}/{x}/{y}.png', {
+      //   attribution: 'Mapbox YO yo yo<a href="http://mapbox.com/about/maps" target="_blank">Terms &amp; Feedback</a>'
+      // }).addTo(map);
+
+      // change the query for the first layer
+      var countyOptions = {
+        sql: "SELECT * FROM cb_2013_us_county_500k",
+        // cartocss: "#example_cartodbjs_1{marker-fill: #109DCD; marker-width: 5; marker-line-color: white; marker-line-width: 0;}"
+      }
+
+      var stateOptions = {
+        sql: "SELECT * FROM ne_50m_admin_1_states",
+        // cartocss: "#example_cartodbjs_1{marker-fill: #109DCD; marker-width: 5; marker-line-color: white; marker-line-width: 0;}"
+      }
+
+      cartodb.createLayer(map, layerUrl)
+        .addTo(map)
+        .on('done', function(   layer) {
+
+            console.log('what in tarnation is going on here..')
+            globalLayer =   layer
+            
+            // vis.addOverlay({
+            //     type: 'infobox',
+            //     template: $('#infobox_template').html()
+            // })
+
+            var county  =   layer.getSubLayer(0).set(countyOptions);
+            var state   =   layer.getSubLayer(1).set(stateOptions);
+
+
+        }).on('error', function() {
+            // log the error
+        });
+    }  
+
+    $(function() {
+        init();
+    })
+
+    </script>
+
+    <script type="infowindow/html" id="infobox_template">
+        BLA BLA Im an infowindow / box / whatever
+    </script>
+
+  <script type="infowindow/html" id="infowindow_template">
+    <div class="infowindow-custom" >
+      <a href="#close" class="cartodb-popup-close-button close">x</a>
+      <div class="cartodb-popup-content">
+        <div class="content" style="padding:20px">
+          {{content.data.name}} bla
+        </div>
+      </div>
+      <div class="cartodb-popup-tip-container"></div>
+    </div>
+
+  </script>
+
+    <style>
+    #map {
+        height: 500px;
+        width: 100%;
+    }
+
+    </style>
+
+
+{% endblock %}
+
+{% block title %}CartoDB /w django-bootstrap3{% endblock %}
+
+{% block content %}
+
+    This is <em>bootstrap3</em> for <strong>Django</strong>.
+
+    <select id="location">
+        <option value="1" data-lat="57" data-lon="-122" data-sql="">Test Location 1</option>
+        <option value="2" data-lat="37" data-lon="-122" data-sql="">Test Location 2</option></select>
+    <div id="map"></div>
+
+{% endblock %}
