@@ -5,24 +5,34 @@
 {% load bootstrap3 %}
 
 {% block bootstrap3_content %}
-    <div class="container">
-        <h1>{% block title %}(no title){% endblock %}</h1>
 
-        <p>
-            <a href="{% url 'home' %}">home</a>
-            <a href="{% url 'formset_default' %}">formset</a>
-            <a href="{% url 'form_default' %}">form</a>
-            <a href="{% url 'form_by_field' %}">form_by_field</a>
-            <a href="{% url 'form_horizontal' %}">form_horizontal</a>
-            <a href="{% url 'form_inline' %}">form_inline</a>
-            <a href="{% url 'form_with_files' %}">form_with_files</a>
-            <a href="{% url 'pagination' %}">pagination</a>
-            <a href="{% url 'misc' %}">miscellaneous</a>
-        </p>
 
+<!-- Fixed navbar -->
+<nav class="navbar navbar-inverse navbar-fixed-top">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="#">Data For Diplomas</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li><a href="{% url 'home' %}">Home</a></li>
+        <li><a href="{% url 'about' %}">About</a></li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div>
+</nav>
+<div class="container theme-showcase" role="main">
+    <div class="fluid-container" style="margin-top: 100px;">
         {% bootstrap_messages %}
-
         {% block content %}(no content){% endblock %}
     </div>
+
+</div>
 
 {% endblock %}

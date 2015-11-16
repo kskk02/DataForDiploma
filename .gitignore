@@ -1,0 +1,8 @@
+
+*.mo
+
+lib/python2.7/site-packages/django/contrib/admin/templates/admin/change_list.html
+
+lib/python2.7/site-packages/django/contrib/admin/templates/admin/delete_confirmation.html
+
+*.pyc
