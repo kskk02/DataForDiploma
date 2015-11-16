@@ -4,73 +4,9 @@
     <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/3.15/themes/css/cartodb.css" />
 
     <script src="http://libs.cartocdn.com/cartodb.js/v3/3.15/cartodb.js"></script>
-    
+    <script src="https://code.jquery.com/ui/1.7.2/jquery-ui.min.js"></script>
+
     <script>
-
-
-
-    // $(function() {
-    //     var mapvis;
-    //     var layerUrl = 'http://documentation.cartodb.com/api/v2/viz/836e37ca-085a-11e4-8834-0edbca4b5057/viz.json';
-
-    //     var LayerOptions = {
-    //         sql: "SELECT * FROM example_cartodbjs_1 where adm0_a3 = 'USA'"
-    //     }
-
-    //     var map = cartodb.createVis('map', 'https://dyerrington.cartodb.com/api/v2/viz/37406786-82b3-11e5-8347-0ea31932ec1d/viz.json').done(function(vis, layers) {
-    //         mapvis = vis
-    //         console.log('This is the vis var:', vis, 'and this is the layers var:', layers)
-    //     })
-        
-    //     cartodb.createLayer(map, layerUrl, LayerOptions)
-    //     .addTo(map)
-    //     .on('done', function(layer) {
-    //         // get sublayer 0 and set the infowindow template
-    //         var sublayer = layer.getSubLayer(0);
-    //         console.log('WE got us the stufffs here.... ho ho ho')
-
-    //         sublayer.infowindow.set('template', $('#infowindow_template').html());
-    //     }).on('error', function(error) {
-    //         console.log("some error occurred", error);
-    //     });
-
-    //     $('#location').change(function() {
-    //         console.log($('option:selected', this).data('lat'));
-    //         var options = {
-    //             'lat':  parseInt($('option:selected', this).data('lat')),
-    //             'lon':  parseInt($('option:selected', this).data('lon')),
-    //         }
-
-    //         console.log('Updating map location to location', $(this).val());
-    //         map = mapvis.getNativeMap();
-    //         // map.setView(new L.LatLng(options['lat'], options['lon']), 7);
-    //         // map.center([-3.4, 44.2])
-    //         // 
-    //         // Query our CartoDB table to find the center of a state from your Counties
-    //         // Zoom the leaflet map to that center
-    //         var account_name = 'dyerrington';
-    //         var sql = cartodb.SQL({ user: account_name });
-
-    //         var c = '28';
-
-    //         // this sql will get the centroid of a state based on the statefp code... here hard coded to 28
-    //         // 
-    //         // 
-    //         sql.execute("SELECT " +
-    //             "st_x(st_centroid(st_collect(the_geom))) lon, " +
-    //             "st_y(st_centroid(st_collect(the_geom))) lat " +
-    //             "FROM cb_2013_us_county_500k " +
-    //             "WHERE statefp ilike  '28' GROUP BY statefp").done(function(data) {
-                
-    //             // Check if there are results
-    //             if(data.rows.length > 0) {
-    //                 map.setView([data.rows[0].lat, data.rows[0].lon], 9, { animate: true});
-    //             }
-    //         });
-    //     });
-
-
-    // })
 
     var map;
     var globalLayer;
@@ -87,8 +23,7 @@
         layer.trigger('featureClick', null, latlng, null, { cartodb_id: cartodb_id }, 0);
       }
 
-      var layerUrl = 'http://documentation.cartodb.com/api/v2/viz/236085de-ea08-11e2-958c-5404a6a683d5/viz.json';
-
+      // var layerUrl = 'http://documentation.cartodb.com/api/v2/viz/236085de-ea08-11e2-958c-5404a6a683d5/viz.json';
       var layerUrl = 'https://dyerrington.cartodb.com/api/v2/viz/37406786-82b3-11e5-8347-0ea31932ec1d/viz.json';
 
       viz  = cartodb.createVis('map', layerUrl, {
@@ -102,6 +37,45 @@
         // })
 
         var map = vis.getNativeMap();
+
+        var legend = new cdb.geo.ui.Legend({
+            type: "custom",
+            data: [
+                { name: "Category 1", value: "#FFC926" },
+                { name: "Category 2", value: "#76EC00" },
+                { name: "Category 3", value: "#00BAF8" },
+                { name: "Category 4", value: "#D04CFD" }
+            ]
+         });
+
+        $('#map').append(legend.render().el);
+
+        // var v = cdb.vis.Overlay.create('search', map.viz, {})
+        // v.show();
+        
+        // $('#map').append(v.render().el);
+        
+
+        cartodb.createLayer(map, layerUrl)
+        .addTo(map)
+        .on('done', function(layer) {
+
+            console.log('what in tarnation is going on here..')
+            globalLayer =   layer
+            
+            // vis.addOverlay({
+            //     type: 'infobox',
+            //     template: $('#infobox_template').html()
+            // })
+
+            var county  =   layer.getSubLayer(0).set(countyOptions);
+            var state   =   layer.getSubLayer(1).set(stateOptions);
+
+
+        }).on('error', function(err) {
+            // log the error
+            console.log('booo error', err)
+        });
 
         var stateOptions = {
             sql: "SELECT * FROM ne_50m_admin_1_states",
@@ -126,6 +100,10 @@
             state.on('featureClick', function(e, latlng, pos, data) {
                 // alert("Hey! You clicked " + data.cartodb_id);
                 console.log('Our data for state is:', data['code_local'].substring(2));
+
+                // toggle detail ui elements
+                $('.global-ui').toggle();
+                $('.detail-ui').toggle();
 
                 var statecode = data['code_local'].substring(2);
                 county.show();
@@ -154,10 +132,10 @@
                 
                 console.log('featureClick() ........')
                 // alert("Hey! You clicked " + data.cartodb_id);
-      // $('.link').click(function() {
-      //   openInfowindow(county, [40.4000262645, -3.683351686], 5324)
-      //   return false;
-      // });
+          // $('.link').click(function() {
+          //   openInfowindow(county, [40.4000262645, -3.683351686], 5324)
+          //   return false;
+          // });
                 // openInfowindow(, [40.4000262645, -3.683351686], 5324)
                 // county.hide();
                 // state.show();
@@ -170,47 +148,31 @@
       //   attribution: 'Mapbox YO yo yo<a href="http://mapbox.com/about/maps" target="_blank">Terms &amp; Feedback</a>'
       // }).addTo(map);
 
-      // change the query for the first layer
-      var countyOptions = {
-        sql: "SELECT * FROM cb_2013_us_county_500k",
-        // cartocss: "#example_cartodbjs_1{marker-fill: #109DCD; marker-width: 5; marker-line-color: white; marker-line-width: 0;}"
-      }
+      // // change the query for the first layer
+      // var countyOptions = {
+      //   sql: "SELECT * FROM cb_2013_us_county_500k",
+      //   // cartocss: "#example_cartodbjs_1{marker-fill: #109DCD; marker-width: 5; marker-line-color: white; marker-line-width: 0;}"
+      // }
 
-      var stateOptions = {
-        sql: "SELECT * FROM ne_50m_admin_1_states",
-        // cartocss: "#example_cartodbjs_1{marker-fill: #109DCD; marker-width: 5; marker-line-color: white; marker-line-width: 0;}"
-      }
+      // var stateOptions = {
+      //   sql: "SELECT * FROM ne_50m_admin_1_states",
+      //   // cartocss: "#example_cartodbjs_1{marker-fill: #109DCD; marker-width: 5; marker-line-color: white; marker-line-width: 0;}"
+      // }
 
-      cartodb.createLayer(map, layerUrl)
-        .addTo(map)
-        .on('done', function(   layer) {
-
-            console.log('what in tarnation is going on here..')
-            globalLayer =   layer
-            
-            // vis.addOverlay({
-            //     type: 'infobox',
-            //     template: $('#infobox_template').html()
-            // })
-
-            var county  =   layer.getSubLayer(0).set(countyOptions);
-            var state   =   layer.getSubLayer(1).set(stateOptions);
-
-
-        }).on('error', function() {
-            // log the error
-        });
     }  
 
     $(function() {
         init();
+        $( "#slider" ).slider();
     })
 
     </script>
 
+    <!--
     <script type="infowindow/html" id="infobox_template">
         BLA BLA Im an infowindow / box / whatever
     </script>
+    -->
 
   <script type="infowindow/html" id="infowindow_template">
     <div class="infowindow-custom" >
@@ -227,8 +189,8 @@
 
     <style>
     #map {
-        height: 500px;
-        width: 100%;
+        height: 500px;  
+ 
     }
 
     </style>
@@ -239,12 +201,27 @@
 {% block title %}CartoDB /w django-bootstrap3{% endblock %}
 
 {% block content %}
+    
+    <div class="row">
+        <div class="col-md-8">
+        This is <em>bootstrap3</em> for <strong>Django</strong>.
 
-    This is <em>bootstrap3</em> for <strong>Django</strong>.
+        <select id="location">
+            <option value="1" data-lat="57" data-lon="-122" data-sql="">Test Location 1</option>
+            <option value="2" data-lat="37" data-lon="-122" data-sql="">Test Location 2</option></select>
+        <div id="map"></div>
+        </div>
+        <div class="col-md-4">
+            <div class="global-ui">
+                [global UI here]
+            </div>
+            <div class="detail-ui" style="display: none;">
+                [detail UI here]
+                <div id="slider"></div>
+                <button type="button" id="back" class="btn btn-primary">Go Back</button>
+            </div>
+        </div>
 
-    <select id="location">
-        <option value="1" data-lat="57" data-lon="-122" data-sql="">Test Location 1</option>
-        <option value="2" data-lat="37" data-lon="-122" data-sql="">Test Location 2</option></select>
-    <div id="map"></div>
+    </div>
 
 {% endblock %}
