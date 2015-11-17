@@ -27,6 +27,9 @@ class HomePageView(TemplateView):
     #     messages.info(self.request, 'This is a demo of a message.')
     #     return context
 
+class SriView(TemplateView):
+    template_name = 'sri.html'
+
 class AboutView(TemplateView):
     template_name = 'about.html'
 
