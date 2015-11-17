@@ -21,6 +21,12 @@ from .views import *
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url(r'^$', HomePageView.as_view(), name='home'),
+    url(r'^graduation_rates$', GraduationRatesView.as_view(), name='home'),
+    url(r'^cohort_size$', CohortSizeView.as_view(), name='home'),
+    url(r'^features$', FeaturesView.as_view(), name='home'),
+    url(r'^actionable_features$', ActionableFeaturesView.as_view(), name='home'),
+    url(r'^notebook$', NotebookView.as_view(), name='home'),
+
     url(r'^sri$', SriView.as_view(), name='sri'),
     url(r'^about$', AboutView.as_view(), name='about'),
     url(r'^formset$', DefaultFormsetView.as_view(), name='formset_default'),

@@ -38,6 +38,21 @@ class AboutView(TemplateView):
     #     messages.info(self.request, 'This is a demo of a message.')
     #     return context
 
+class GraduationRatesView(TemplateView):
+    template_name = 'graduation_rates.html'
+
+class CohortSizeView(TemplateView):
+    template_name = 'cohort_size.html'
+
+class FeaturesView(TemplateView):
+    template_name = 'features.html'
+
+class ActionableFeaturesView(TemplateView):
+    template_name = 'actionable_features.html'
+
+class NotebookView(TemplateView):
+    template_name = 'notebook.html'
+
 
 class DefaultFormsetView(FormView):
     template_name = 'formset.html'

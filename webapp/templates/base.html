@@ -4,6 +4,57 @@
 
 {% load bootstrap3 %}
 
+{% block bootstrap3_extra_head %}
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+    <link rel="shortcut icon" href="http://cartodb.com/assets/favicon.ico" />
+    <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/3.15/themes/css/cartodb.css" />
+
+    <style>
+      html, body {
+        height: 100%;
+        padding: 0;
+        margin: 0;
+      }
+
+      #map {
+        width: 100%;
+        height: 100%;
+        margin-top: -50px;
+      }
+
+      #layer_selector {
+        position: absolute;
+        top: 55px;
+        right: 20px;
+        padding: 0;
+      }
+
+      #layer_selector ul {
+        padding: 0; margin: 0;
+        list-style-type: none;
+      }
+
+      #layer_selector li {
+        border-bottom: 1px solid #999;
+        padding: 15px 30px;
+        font-family: "Helvetica", Arial;
+        font-size: 13px;
+        color: #444;
+        cursor: auto;
+      }
+
+      #layer_selector li:hover {
+        background-color: #F0F0F0;
+        cursor: pointer;
+      }
+
+      #layer_selector li.selected {
+        background-color: #EEE;
+      }
+    </style>
+{% endblock %}
+
 {% block bootstrap3_content %}
 
 
@@ -21,7 +72,24 @@
     </div>
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
-        <li><a href="{% url 'home' %}">Home</a></li>
+
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Maps <span class="caret"></span></a>
+            <ul class="dropdown-menu">
+              <li><a href="/graduation_rates">Graduation Rates</a></li>
+              <li><a href="/cohort_size">Cohort Size</a></li>
+            </ul>
+        </li>
+
+        <li><a href="/features">Features</a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Analytics <span class="caret"></span></a>
+            <ul class="dropdown-menu">
+              <li><a href="/actionable_features">Actionable Features</a></li>
+              <li><a href="/notebook">Detailed Notebook</a></li>
+            </ul>
+        </li>
+
         <li><a href="{% url 'about' %}">About</a></li>
       </ul>
     </div><!--/.nav-collapse -->
@@ -30,9 +98,10 @@
 <div class="container theme-showcase" role="main">
     <div class="fluid-container" style="margin-top: 100px;">
         {% bootstrap_messages %}
-        {% block content %}(no content){% endblock %}
+        {% block content %}{% endblock %}
     </div>
-
+    
 </div>
+{% block map_content %}{% endblock %}
 
 {% endblock %}
