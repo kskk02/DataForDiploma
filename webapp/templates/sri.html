@@ -53,10 +53,10 @@
     <div id="layer_selector" class="cartodb-infobox">
       <ul>
         <li data="all" class="selected">All Schools</li>
-        <li data="1">Under 5 Students</li>
-        <li data="2">Between 6 and 15</li>
-        <li data="3">Between 31 and 60</li>
-        <li data="4">Between 61 and 200</li>
+        <li data="1">Under 6 Students</li>
+        <li data="2">Between 20 and 6</li>
+        <li data="3">Between 60 and 21</li>
+        <li data="4">Between 200 and 61</li>
         <li data="5">More than 200</li>
       </ul>
     </div>
@@ -89,22 +89,34 @@
 // 31-60 students in cohort: ≤10%, 11-19%, 20-29%, 30-39%, 40-49%, 50-59%, 60-69%, 70-79%, 80-89%, ≥90%
 // 61-200 students in cohort: ≤5%, 6-9%, 10-14%, 15-19%, 20-24%, 24-29%, 30-34%, 35-39%, 40-44%, 45-49%, 50-54%, 55-59%, 60-64%, 65-69%, 70-74%, 75-79%, 80-84%, 85-89%, 90-94%, ≥95%
 // More than 200 students in cohort: ≤1%, 2%, 3%, . . . , 98%, ≥99%
-//         <li data="1">Under 5 Students</li>
-//         <li data="2">Between 6 and 15</li>
-//         <li data="3">Between 31 and 60</li>
-//         <li data="4">Between 61 and 200</li>
-//         <li data="5">More than 200</li>
+        // <li data="1">Under 6 Students</li>
+        // <li data="2">Between 20 and 6</li>
+        // <li data="3">Between 60 and 21</li>
+        // <li data="4">Between 200 and 61</li>
+        // <li data="5">More than 200</li>
 
 
           if(area !== 'all') {
                   console.log(area);
               switch (parseInt(area)) {
                 case (1):
-                  query = "SELECT * FROM test_lat_long WHERE all_cohort_1112 <= 5";
+                  query = "SELECT * FROM test_lat_long WHERE all_cohort_1112 <= 6";
                   console.log(query);
                   break;
                 case(2):
-                  query = "SELECT * FROM test_lat_long WHERE all_cohort_1112 >=6 and all_cohort_1112 < 15";
+                  query = "SELECT * FROM test_lat_long WHERE all_cohort_1112 >=6 and all_cohort_1112 < 20";
+                  console.log(query);
+                  break;
+                case(3):
+                  query = "SELECT * FROM test_lat_long WHERE all_cohort_1112 >=21 and all_cohort_1112 < 60";
+                  console.log(query);
+                  break;
+                case(4):
+                  query = "SELECT * FROM test_lat_long WHERE all_cohort_1112 >=61 and all_cohort_1112 < 200";
+                  console.log(query);
+                  break;
+                case(5):
+                  query = "SELECT * FROM test_lat_long WHERE all_cohort_1112 >=200";
                   console.log(query);
                   break;
               }              

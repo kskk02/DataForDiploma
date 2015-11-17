@@ -8,6 +8,111 @@
 
 {% block content %}
 
+   <div id="map"></div>
+
+    <div id="layer_selector" class="cartodb-infobox">
+      <ul>
+        <li data="all" class="selected">All Schools</li>
+        <li data="1">Under 6 Students</li>
+        <li data="2">Between 20 and 6</li>
+        <li data="3">Between 60 and 21</li>
+        <li data="4">Between 200 and 61</li>
+        <li data="5">More than 200</li>
+      </ul>
+    </div>
+
+
+
+
+
+    <!-- include cartodb.js library -->
+    <script src="http://libs.cartocdn.com/cartodb.js/v3/3.15/cartodb.js"></script>
+
+    <script>
+      // create layer selector
+      function createSelector(layer) {
+        var sql = new cartodb.SQL({ user: 'kskk02' });
+
+        var $options = $('#layer_selector li');
+        $options.click(function(e) {
+          // get the area of the selected layer
+          var $li = $(e.target);
+          var area = $li.attr('data');
+
+          // deselect all and select the clicked one
+          $options.removeClass('selected');
+          $li.addClass('selected');
+
+          // create query based on data from the layer
+          var query = "SELECT * FROM test_lat_long ";
+
+// <5 students in cohort: "PS" (i.e. the graduation rate is not given)
+// 6-15 students in cohort: <50%, ≥50%
+// 16-30 students in cohort: ≤20%, 21-39%, 40-59%, 60-79% ≥80%
+// 31-60 students in cohort: ≤10%, 11-19%, 20-29%, 30-39%, 40-49%, 50-59%, 60-69%, 70-79%, 80-89%, ≥90%
+// 61-200 students in cohort: ≤5%, 6-9%, 10-14%, 15-19%, 20-24%, 24-29%, 30-34%, 35-39%, 40-44%, 45-49%, 50-54%, 55-59%, 60-64%, 65-69%, 70-74%, 75-79%, 80-84%, 85-89%, 90-94%, ≥95%
+// More than 200 students in cohort: ≤1%, 2%, 3%, . . . , 98%, ≥99%
+        // <li data="1">Under 6 Students</li>
+        // <li data="2">Between 20 and 6</li>
+        // <li data="3">Between 60 and 21</li>
+        // <li data="4">Between 200 and 61</li>
+        // <li data="5">More than 200</li>
+
+
+          if(area !== 'all') {
+                  console.log(area);
+              switch (parseInt(area)) {
+                case (1):
+                  query = "SELECT * FROM test_lat_long WHERE all_cohort_1112 <= 6";
+                  console.log(query);
+                  break;
+                case(2):
+                  query = "SELECT * FROM test_lat_long WHERE all_cohort_1112 >=6 and all_cohort_1112 < 20";
+                  console.log(query);
+                  break;
+                case(3):
+                  query = "SELECT * FROM test_lat_long WHERE all_cohort_1112 >=21 and all_cohort_1112 < 60";
+                  console.log(query);
+                  break;
+                case(4):
+                  query = "SELECT * FROM test_lat_long WHERE all_cohort_1112 >=61 and all_cohort_1112 < 200";
+                  console.log(query);
+                  break;
+                case(5):
+                  query = "SELECT * FROM test_lat_long WHERE all_cohort_1112 >=200";
+                  console.log(query);
+                  break;
+              }              
+          }
+
+          // change the query in the layer to update the map
+          layer.setSQL(query);
+        });
+      }
+
+      function main() {
+        cartodb.createVis('map', 'https://kskk02.cartodb.com/api/v2/viz/ad5c590a-8adf-11e5-bbde-0e674067d321/viz.json', {
+          tiles_loader: true,
+          center_lat: 39.5,
+          center_lon: -98,
+          zoom: 3
+        })
+        .done(function(vis, layers) {
+          // layer 0 is the base layer, layer 1 is cartodb layer
+          var subLayer = layers[1].getSubLayer(0);
+          createSelector(subLayer);
+        })
+        .error(function(err) {
+          console.log(err);
+        });
+      }
+
+      window.onload = main;
+    </script>
+
+   <script type="text/javascript">
+
+
     <h2>Cohort size / map</h2>
     <p>Insert here....</p>
 
