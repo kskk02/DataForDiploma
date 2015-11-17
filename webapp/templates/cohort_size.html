@@ -6,7 +6,7 @@
     About
 {% endblock %}
 
-{% block content %}
+{% block map_content %}
 
    <div id="map"></div>
 
@@ -14,10 +14,10 @@
       <ul>
         <li data="all" class="selected">All Schools</li>
         <li data="1">Under 6 Students</li>
-        <li data="2">Between 20 and 6</li>
-        <li data="3">Between 60 and 21</li>
-        <li data="4">Between 200 and 61</li>
-        <li data="5">More than 200</li>
+        <li data="2">Between 20 and 6 Students</li>
+        <li data="3">Between 60 and 21 Students</li>
+        <li data="4">Between 200 and 61 Students</li>
+        <li data="5">More than 200 Students</li>
       </ul>
     </div>
 
@@ -32,7 +32,9 @@
       // create layer selector
       function createSelector(layer) {
         var sql = new cartodb.SQL({ user: 'kskk02' });
-
+        var query = "SELECT * FROM test_lat_long ";
+        layer.setSQL(query);
+        
         var $options = $('#layer_selector li');
         $options.click(function(e) {
           // get the area of the selected layer
@@ -44,7 +46,7 @@
           $li.addClass('selected');
 
           // create query based on data from the layer
-          var query = "SELECT * FROM test_lat_long ";
+         
 
 // <5 students in cohort: "PS" (i.e. the graduation rate is not given)
 // 6-15 students in cohort: <50%, ≥50%
@@ -110,10 +112,5 @@
       window.onload = main;
     </script>
 
-   <script type="text/javascript">
-
-
-    <h2>Cohort size / map</h2>
-    <p>Insert here....</p>
 
 {% endblock %}
