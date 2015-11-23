@@ -9,7 +9,46 @@
 {% block content %}
 
     <h1>Feature Importance</h1>
-    This is an interactive visualization that illustrates a particular decision tree of the random forest. The earlier the feature is on the tree, the more important it is. In addition, the thickness of the line also represents the degree of importance of that feature. 
+    This is an interactive visualization that illustrates a particular decision tree of the random forest. The earlier the feature is on the tree, the more important it is. You can hover over the right hand bars to see the specific % of importance. In addition, the thickness of the line also represents the degree of importance of that feature. You can also click on any of the circles to zoom into the specific branch to see precisely what the decision is tree is doing in order to predict the graduation rate. The bottom leaves represent the actual predicted value for the graduation rate. Note: Only a subset of the features are defined here. For full definitions, please refer to the detailed notebook.
+<p>
+A few definitions:
+
+<style type="text/css">
+.tg  {border-collapse:collapse;border-spacing:0;border-color:#aabcfe;}
+.tg td{font-family:Arial, sans-serif;font-size:14px;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:#aabcfe;color:#669;background-color:#e8edff;}
+.tg th{font-family:Arial, sans-serif;font-size:14px;font-weight:normal;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:#aabcfe;color:#039;background-color:#b9c9fe;}
+.tg .tg-baqh{text-align:center;vertical-align:top}
+.tg .tg-mb3i{background-color:#D2E4FC;text-align:right;vertical-align:top}
+.tg .tg-lqy6{text-align:right;vertical-align:top}
+.tg .tg-6k2t{background-color:#D2E4FC;vertical-align:top}
+.tg .tg-yw4l{vertical-align:top}
+</style>
+<table class="tg">
+  <tr>
+    <th class="tg-baqh" colspan="6">Key Feature Definitions</th>
+  </tr>
+  <tr>
+    <td class="tg-6k2t">pct_female_only_HH</td>
+    <td class="tg-6k2t">The percentage of the high school cohort that has a female only households. (i.e. no male father or single mother) </td>
+  </tr>
+  <tr>
+    <td class="tg-yw4l">perc_ECD_in_cohort</td>
+    <td class="tg-lqy6">The percentage of the high school cohort that is economically disadvantaged.</td>
+  </tr>
+  <tr>
+    <td class="tg-6k2t">max_of_daily_max</td>
+    <td class="tg-mb3i">The maximum temperature of the daily maximums across 2011 for that specific school district.</td>
+  </tr>
+  <tr>
+    <td class="tg-yw4l">pct_people_below_poverty</td>
+    <td class="tg-lqy6">The percentage of the population in that school district that is below poverty.</td>
+  </tr>
+  <tr>
+    <td class="tg-yw4l">support_general_admin_per_pupil</td>
+    <td class="tg-lqy6">Support Spending on General Administration, Per Pupil ($) </td>
+  </tr>
+</table>
+
 
     <iframe src="https://bigml.com/embedded/model/25KA9MzaqsPhR11L3wZxMFleB2e/tree" frameborder="0" allowtransparency="true" allowfullscreen="allowfullscreen" width="940px" height="1200" scrolling="no"></iframe>
 
